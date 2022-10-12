@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+ * Copyright 2020-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package io.mybatis.provider.model;
 
 import io.mybatis.provider.Entity;
+import io.mybatis.provider.Style;
 import org.apache.ibatis.type.JdbcType;
 import org.apache.ibatis.type.StringTypeHandler;
 
@@ -25,7 +26,7 @@ import java.util.Date;
 /**
  * @Extend.Table 优先级更高，@Entity.Table("user") 不起作用
  */
-@Entity.Table(value = "sys_user", remark = "系统用户", autoResultMap = true)
+@Entity.Table(value = "sys_user", remark = "系统用户", style = Style.LOWER_UNDERSCORE, autoResultMap = true)
 public class UserMore {
   @Entity.Column(id = true, remark = "主键", updatable = false, insertable = false)
   private Long    id;
@@ -39,11 +40,12 @@ public class UserMore {
   private Double  points;
   @Entity.Column(selectable = false, remark = "密码")
   private String  password;
-  @Entity.Column(value = "when_created", remark = "创建时间", jdbcType = JdbcType.TIMESTAMP)
+  @Entity.Column(jdbcType = JdbcType.TIMESTAMP)
   private Date    whenCreated;
   @Entity.Column(remark = "介绍", typeHandler = StringTypeHandler.class)
   private String  info;
   //不是表字段
+  @Entity.Transient
   private String  noExtendColumn;
 
   public Long getId() {

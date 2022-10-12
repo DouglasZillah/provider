@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+ * Copyright 2020-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,15 @@ public @interface Entity {
     String remark() default "";
 
     /**
+     * 名称规则、样式，同时应用于表名和列名，不想用于表名时，直接指定表名 {@link #value()}即可。
+     * <p>
+     * 2.0版本之前默认为 {@link Style#NORMAL}, 2.0版本之后默认使用 {@link Style#LOWER_UNDERSCORE}
+     * <p>
+     * 可以通过 {@link Style#DEFAULT_STYLE_KEY} = 格式 来修改默认值
+     */
+    String style() default "";
+
+    /**
      * 使用指定的 <resultMap>
      */
     String resultMap() default "";
@@ -71,7 +80,7 @@ public @interface Entity {
   }
 
   /**
-   * 属性配置
+   * 属性配置，优先级高于 {@link io.mybatis.config.ConfigHelper } 提供的配置
    */
   @interface Prop {
     /**
@@ -83,11 +92,14 @@ public @interface Entity {
      * 属性值
      */
     String value();
+  }
 
-    /**
-     * 属性值类型，支持 String, Integer, Long, Boolean, Double, Float 六种类型
-     */
-    Class type() default String.class;
+  /**
+   * 排除列
+   */
+  @Retention(RetentionPolicy.RUNTIME)
+  @Target(ElementType.FIELD)
+  public @interface Transient {
   }
 
   /**
@@ -119,7 +131,7 @@ public @interface Entity {
     /**
      * 排序的优先级，多个排序字段时，根据该值确定顺序，数值越小优先级越高
      */
-    int orderByPriority () default 0;
+    int orderByPriority() default 0;
 
     /**
      * 可查询

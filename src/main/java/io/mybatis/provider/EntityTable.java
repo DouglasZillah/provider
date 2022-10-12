@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+ * Copyright 2020-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,11 +51,17 @@ public class EntityTable extends EntityProps<EntityTable> {
   public static final Pattern            DELIMITER         = Pattern.compile("^[`\\[\"]?(.*?)[`\\]\"]?$");
   public static final String             RESULT_MAP_NAME   = "BaseProviderResultMap";
   /**
-   * 表名
+   * 原始表名，在拼 SQL 中，使用 {@link #tableName()} 方法，这个方法可能会返回代理方法加工后的值
    */
   @Getter
   @Setter
   protected           String             table;
+  /**
+   * 实体类和字段转表名和字段名方式
+   */
+  @Getter
+  @Setter
+  protected           String             style;
   /**
    * 实体类
    */
@@ -101,6 +107,13 @@ public class EntityTable extends EntityProps<EntityTable> {
 
   public static EntityTable of(Class<?> entityClass) {
     return new EntityTable(entityClass);
+  }
+
+  /**
+   * 获取 SQL 语句中使用的表名
+   */
+  public String tableName() {
+    return table();
   }
 
   /**
@@ -170,7 +183,7 @@ public class EntityTable extends EntityProps<EntityTable> {
    */
   protected boolean canUseResultMaps(ProviderContext providerContext, String cacheKey) {
     if (resultMaps != null
-      && providerContext.getMapperMethod().isAnnotationPresent(SelectProvider.class)) {
+        && providerContext.getMapperMethod().isAnnotationPresent(SelectProvider.class)) {
       Class<?> resultType = resultMaps.get(0).getType();
       //类型相同时直接返回
       if (resultType == providerContext.getMapperMethod().getReturnType()) {
@@ -178,7 +191,7 @@ public class EntityTable extends EntityProps<EntityTable> {
       }
       //可能存在泛型的情况，如 List<T>, Optional<T>, 还有 MyBatis 包含的一些注解
       Class<?> returnType = GenericTypeResolver.getReturnType(
-        providerContext.getMapperMethod(), providerContext.getMapperType());
+          providerContext.getMapperMethod(), providerContext.getMapperType());
       return resultType == returnType;
     }
     return false;
@@ -391,7 +404,7 @@ public class EntityTable extends EntityProps<EntityTable> {
    */
   public Optional<List<EntityColumn>> orderByColumns() {
     List<EntityColumn> orderByColumns = columns().stream()
-      .filter(c -> Utils.isNotEmpty(c.orderBy))
+        .filter(c -> Utils.isNotEmpty(c.orderBy))
         .sorted(Comparator.comparing(EntityColumn::orderByPriority))
         .collect(Collectors.toList());
     if (orderByColumns.size() > 0) {
@@ -433,7 +446,7 @@ public class EntityTable extends EntityProps<EntityTable> {
   public Optional<String> groupByColumnList() {
     Optional<List<EntityColumn>> groupByColumns = groupByColumns();
     return groupByColumns.map(entityColumns -> entityColumns.stream().map(EntityColumn::column)
-      .collect(Collectors.joining(",")));
+        .collect(Collectors.joining(",")));
   }
 
   /**
@@ -452,7 +465,7 @@ public class EntityTable extends EntityProps<EntityTable> {
   public Optional<String> havingColumnList() {
     Optional<List<EntityColumn>> havingColumns = havingColumns();
     return havingColumns.map(entityColumns -> entityColumns.stream().map(EntityColumn::column)
-      .collect(Collectors.joining(",")));
+        .collect(Collectors.joining(",")));
   }
 
   /**
@@ -471,8 +484,8 @@ public class EntityTable extends EntityProps<EntityTable> {
   public Optional<String> orderByColumnList() {
     Optional<List<EntityColumn>> orderByColumns = orderByColumns();
     return orderByColumns.map(entityColumns -> entityColumns.stream()
-      .map(column -> column.column() + " " + column.orderBy())
-      .collect(Collectors.joining(",")));
+        .map(column -> column.column() + " " + column.orderBy())
+        .collect(Collectors.joining(",")));
   }
 
   /**

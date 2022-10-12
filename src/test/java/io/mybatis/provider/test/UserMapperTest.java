@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 the original author or authors.
+ * Copyright 2020-2022 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ public class UserMapperTest extends BaseTest {
     Assert.assertEquals(3, entityTable.whereColumns().size());
 
     Assert.assertEquals("user", entityTable.table());
-    Assert.assertEquals("id,name,sex", entityTable.baseColumnList());
-    Assert.assertEquals("id,name AS username,sex", entityTable.baseColumnAsPropertyList());
+    Assert.assertEquals("ID,name,SEX", entityTable.baseColumnList());
+    Assert.assertEquals("ID AS id,name AS username,SEX AS sex", entityTable.baseColumnAsPropertyList());
   }
 
   @Test
